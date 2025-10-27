@@ -1,0 +1,69 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    // Function to reverse a linked list
+    ListNode* reverseLL(ListNode* head) {
+        ListNode* prev = NULL;
+        ListNode* curr = head;
+        while (curr != NULL) {
+            ListNode* next = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = next;
+        }
+        return prev;
+    }
+
+    // Find the kth node starting from temp
+    ListNode* findKth(ListNode* temp, int k) {
+        while (temp != NULL && k > 1) {
+            temp = temp->next;
+            k--;
+        }
+        return temp;
+    }
+
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        if (head == NULL || k == 1) return head;
+
+        ListNode* temp = head;
+        ListNode* prevLast = NULL;
+
+        while (temp != NULL) {
+            ListNode* kthNode = findKth(temp, k);
+
+            // If fewer than k nodes remain
+            if (kthNode == NULL) {
+                if (prevLast) prevLast->next = temp;
+                break;
+            }
+
+            ListNode* nextGroup = kthNode->next;
+            kthNode->next = NULL; // Temporarily break group
+
+            // Reverse current group
+            ListNode* newHead = reverseLL(temp);
+
+            // Connect previous part to reversed segment
+            if (prevLast == NULL)
+                head = newHead;
+            else
+                prevLast->next = newHead;
+
+            // Move prevLast to end of current group
+            prevLast = temp;
+            temp = nextGroup;
+        }
+
+        return head;
+    }
+};
